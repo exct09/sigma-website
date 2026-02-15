@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGMA - Blade Ball Pro Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --white: #ffffff;
+            --black: #000000;
+            --gray-dark: #1a1a1a;
+            --gray-mid: #333333;
+            --gray-light: #666666;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* Improved Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1a1a1a 0%, #000000 100%);
+            overflow: hidden;
+        }
+
+        /* Animated gradient orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation: float1 25s infinite ease-in-out;
+        }
+
+        .orb:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            top: 50%;
+            right: -250px;
+            animation: float2 30s infinite ease-in-out;
+        }
+
+        .orb:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 70%);
+            bottom: -100px;
+            left: 30%;
+            animation: float3 35s infinite ease-in-out;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -50px) scale(1.1); }
+            66% { transform: translate(-50px, 100px) scale(0.9); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-150px, 100px) scale(1.15); }
+            66% { transform: translate(50px, -150px) scale(0.85); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-100px, -100px) scale(0.9); }
+            66% { transform: translate(150px, 50px) scale(1.2); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: rise linear infinite;
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes rise {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--drift));
+                opacity: 0;
+            }
+        }
+
+        /* Grid overlay - subtle */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+        }
+
+
+
+        /* Header */
+        header {
+            padding: 2rem 5%;
+            position: relative;
+            z-index: 10;
+            border-bottom: 1px solid var(--gray-mid);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 6px;
+        }
+
+        .discord-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.8rem 2rem;
+            background: var(--black);
+            color: var(--white);
+            border: 2px solid var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .discord-btn:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 5% 6rem;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--gray-mid);
+        }
+
+        .hero h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            letter-spacing: -2px;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            font-weight: 300;
+            color: var(--gray-light);
+            margin-bottom: 3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        /* Animated Buttons */
+        .btn {
+            position: relative;
+            padding: 1.2rem 3rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border: 2px solid var(--white);
+            border-radius: 12px;
+            background: var(--black);
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Tool Sections */
+        .tool-section {
+            padding: 6rem 5%;
+            position: relative;
+            border-bottom: 1px solid var(--gray-mid);
+        }
+
+        .tool-section.alt {
+            background: var(--gray-dark);
+        }
+
+        .section-header {
+            max-width: 800px;
+            margin: 0 auto 5rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            letter-spacing: -1px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-light);
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 26, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--gray-mid);
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--white);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .feature-card:hover::before {
+            width: 100%;
+        }
+
+        .feature-card:hover {
+            border-color: var(--white);
+            color: var(--black);
+            transform: translateY(-5px);
+        }
+
+        .feature-card:hover h3,
+        .feature-card:hover p {
+            color: var(--black);
+        }
+
+        .feature-number {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 1.5rem;
+            color: var(--gray-light);
+            transition: color 0.4s ease;
+        }
+
+        .feature-card:hover .feature-number {
+            color: var(--black);
+        }
+
+        .feature-card h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+            transition: color 0.4s ease;
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--gray-light);
+            transition: color 0.4s ease;
+        }
+
+        /* Downloads Section */
+        .downloads {
+            padding: 6rem 5%;
+            background: transparent;
+            position: relative;
+        }
+
+        .download-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .download-card {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--white);
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .download-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(255, 255, 255, 0.2);
+        }
+
+        .download-label {
+            display: none;
+        }
+
+        .download-card h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            transition: color 0.3s ease;
+        }
+
+        .download-card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray-light);
+            margin-bottom: 2.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .download-card .btn {
+            position: relative;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 5%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--gray-mid);
+        }
+
+        footer p {
+            color: var(--gray-light);
+            font-size: 0.9rem;
+        }
+
+        /* Custom Cursor Effect */
+        .cursor-glow {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--white);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.3;
+            transition: all 0.15s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .discord-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .hero {
+                padding: 5rem 5% 3rem;
+            }
+
+            .cta-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .features-grid,
+            .download-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .download-cards {
+                gap: 2rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .cursor-glow {
+                display: none;
+            }
+
+            .orb {
+                filter: blur(60px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor Glow -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="particles" id="particles"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">SIGMA</div>
+        <button class="discord-btn" onclick="copyDiscord()">DISCORD</button>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>DOMINATE<br>BLADE BALL</h1>
+        <div class="cta-group">
+            <a href="#downloads" class="btn btn-primary">DOWNLOAD TOOLS</a>
+        </div>
+    </section>
+
+    <!-- Downloads Section -->
+    <section class="downloads" id="downloads">
+        <div class="download-cards">
+            <!-- Sigmacro Card -->
+            <div class="download-card">
+                <div class="download-label">Macro Tool</div>
+                <h2>SIGMACRO</h2>
+                <p>Advanced macro automation with precise timing control, customizable hotkeys, and rapid execution for complex action sequences</p>
+                <a href="https://www.mediafire.com/file/p2oxliz6zd78gbf/sigmacro.exe/file" class="btn btn-primary" target="_blank">DOWNLOAD</a>
+            </div>
+
+            <!-- Sigmabotter Card -->
+            <div class="download-card">
+                <div class="download-label">Triggerbot</div>
+                <h2>SIGMABOTTER</h2>
+                <p>Ultimate color-detection triggerbot with instant press mode, single press parry mode, and adjustable scan delays for perfect gameplay</p>
+                <a href="https://www.mediafire.com/file/ocmtrszaolc3fh3/sigmabotter+xd.exe/file" class="btn btn-primary" target="_blank">DOWNLOAD</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>SIGMA 2026 | Use responsibly and at your own risk</p>
+    </footer>
+
+    <script>
+        // Copy Discord Link
+        function copyDiscord() {
+            const discordLink = 'https://discord.gg/nf6UWw5fxG';
+            navigator.clipboard.writeText(discordLink).then(() => {
+                const btn = document.querySelector('.discord-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'COPIED!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Generate floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random positioning
+                const startX = Math.random() * 100;
+                const drift = (Math.random() - 0.5) * 100;
+                const duration = 2 + Math.random() * 4; // Even faster: 2-6 seconds
+                const delay = Math.random() * 3;
+                const size = 3 + Math.random() * 3; // 3-6px
+                
+                particle.style.left = startX + '%';
+                particle.style.bottom = '-10px';
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.setProperty('--drift', drift + 'px');
+                particle.style.animationDuration = duration + 's';
+                particle.style.animationDelay = delay + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // Cursor Glow Effect
+        const cursorGlow = document.getElementById('cursorGlow');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            cursorGlow.style.left = cursorX + 'px';
+            cursorGlow.style.top = cursorY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
